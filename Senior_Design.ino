@@ -7,7 +7,7 @@
 
 VL53L0X sensor;
 PololuLedStrip<3> ledStrip;
-#define LED_COUNT 4
+#define LED_COUNT 60
 rgb_color colors[LED_COUNT];
 rgb_color color;
 
@@ -49,12 +49,6 @@ rgb_color color;
 TFT_22_ILI9225 tft = TFT_22_ILI9225(TFT_RST, TFT_RS, TFT_CS, TFT_LED, TFT_BRIGHTNESS);
 
 
-int red_light_pin= 6;
-int green_light_pin = 5;
-int blue_light_pin = 3;
-int red_light_pin2 = 12;
-int green_light_pin2 = 3;
-int blue_light_pin2 = 2;
 int button_pin = 7;
 int piezo_pin = 6;
 
@@ -156,12 +150,6 @@ const unsigned char myBitmap [] PROGMEM = {
 
 // Setup
 void setup() {
-  pinMode(red_light_pin, OUTPUT);
-  pinMode(green_light_pin, OUTPUT);
-  pinMode(blue_light_pin, OUTPUT);
-  pinMode(red_light_pin2, OUTPUT);
-  pinMode(green_light_pin2, OUTPUT);
-  pinMode(blue_light_pin2, OUTPUT);
   pinMode(button_pin, INPUT);
   pinMode(piezo_pin, OUTPUT);
   
@@ -190,20 +178,24 @@ void loop() {
   int temp;
   int pres;
   int on = false;
-  tft.setOrientation(1);
+  tft.setOrientation(3);
   tft.setBackgroundColor(COLOR_WHITE);
   tft.fillRectangle(0, 0, tft.maxX(), tft.maxY(), COLOR_WHITE); //220 x 176
   tft.drawBitmap(0, tft.maxY()/2 - 51/2, myBitmap, 224, 51, COLOR_WHITE, COLOR_ORANGE);
+  RGB_color(255,0,0);
   tone(piezo_pin, 50);
   delay(200);
   tone(piezo_pin, 250);
   tft.drawBitmap(0, tft.maxY()/2 - 51/2, myBitmap, 224, 51, COLOR_WHITE, COLOR_RED);
+  RGB_color(0,255,0);
   delay(150);
   tone(piezo_pin, 10);
   tft.drawBitmap(0, tft.maxY()/2 - 51/2, myBitmap, 224, 51, COLOR_WHITE, COLOR_BLUE);
+  RGB_color(0,0,255);
   delay(150);
   tone(piezo_pin, 80);
   tft.drawBitmap(0, tft.maxY()/2 - 51/2, myBitmap, 224, 51, COLOR_WHITE, COLOR_BLACK);
+  RGB_color(0,0,0);
   delay(150);
   tone(piezo_pin, 250);
   delay(200);
@@ -246,13 +238,15 @@ void loop() {
 //        delay(100);
 //      }
       x = sensor.readRangeContinuousMillimeters();
-      Serial.print(pump);
+      Serial.print(x);
       if (sensor.timeoutOccurred()) { Serial.print(" TIMEOUT"); }
       Serial.println();
-      if (x <= 100){
+      if (x <= 55){
         pump++;
-        while (x <= 100){
+        while (x <= 73){
           x = sensor.readRangeContinuousMillimeters();
+          Serial.print(x);
+          Serial.println();
         }
       }
       if (pump < 4){
@@ -306,8 +300,8 @@ void loop() {
 
 void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
  {
-  color.green = red_light_value;
-  color.red = green_light_value;
+  color.red = red_light_value;
+  color.green = green_light_value;
   color.blue = blue_light_value;
 
   for(uint16_t i = 0; i < LED_COUNT; i++)
